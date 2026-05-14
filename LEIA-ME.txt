@@ -1,0 +1,24 @@
+# RotasPRO v2 — Como usar
+
+## Instalar no Android
+1. Acesse app.netlify.com/drop no computador
+2. Arraste a pasta rotasapp2 para o site
+3. Abra o link no Chrome do Android
+4. Menu (⋮) → "Adicionar à tela inicial"
+
+## API Google (ordenar por distância)
+1. Acesse console.cloud.google.com
+2. Crie um projeto e ative:
+   - Distance Matrix API
+   - Geocoding API (opcional, para nome do endereço)
+3. Crie uma chave em "Credenciais"
+4. Cole no app em "Configurar API Google"
+
+## Funcionalidades
+- Ordenar paradas pela menor distância/tempo da sua localização
+- Cada parada mostra tempo e km estimados
+- A mais próxima recebe troféu 🏆
+- Abertura direta no Waze
+- Drag & drop para reordenar
+- Importação em lote
+- Funciona offline
