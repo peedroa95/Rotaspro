@@ -13,36 +13,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-             fetchSignInMethodsForEmail, signOut, onAuthStateChanged }
-      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot }
-      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDPpex15EAh7hgYwoECFaer53V-BeLJtP8",
-      authDomain: "rotas-87032.firebaseapp.com",
-      projectId: "rotas-87032",
-      storageBucket: "rotas-87032.firebasestorage.app",
-      messagingSenderId: "428456760550",
-      appId: "1:428456760550:web:7cef377aa2aad237075727"
-    };
-
-    const app  = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
-
-    window._fb = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-                   fetchSignInMethodsForEmail, signOut, onAuthStateChanged, doc, getDoc, setDoc, onSnapshot };
-
-    onAuthStateChanged(auth, user => {
-      window._fbUser = user || null;
-      if(window._onAuthReady) window._onAuthReady(user);
-    });
-  </script>
   <style>
     :root{
       --bg:#f5f0e8;--bg2:#ede8df;--surface:#ffffff;--border:#e0d9cf;--border2:#cfc7bb;
@@ -236,67 +206,15 @@
     .sort-banner{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:var(--radius);padding:11px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#15803d;font-weight:500;animation:slideIn .3s ease}
     .toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--ink);color:#fff;border-radius:100px;padding:9px 18px;font-size:13px;font-weight:500;white-space:nowrap;z-index:400;opacity:0;transition:all .28s;pointer-events:none;box-shadow:var(--shadow-lg)}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-    /* ── FIREBASE LOGIN ── */
-    .login-screen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:24px}
-    .login-logo{font-family:'Playfair Display',serif;font-weight:900;font-size:42px;color:var(--accent)}
-    .login-sub{font-size:14px;color:var(--ink3);text-align:center;line-height:1.6;max-width:280px}
-    .btn-google{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:14px 24px;font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--ink);cursor:pointer;box-shadow:var(--shadow-lg);transition:all .2s;width:100%;max-width:300px;justify-content:center}
-    .btn-google:active{transform:scale(.97)}
-    .btn-google svg{width:22px;height:22px;flex-shrink:0}
-    .login-note{font-size:11px;color:var(--ink3);text-align:center}
-
-    /* user chip in header */
-    .user-chip{display:flex;align-items:center;gap:7px;background:var(--surface);border:1.5px solid var(--border);border-radius:100px;padding:4px 10px 4px 4px;box-shadow:var(--shadow);cursor:pointer;transition:all .18s}
-    .user-chip:active{transform:scale(.95)}
-    .user-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border)}
-    .user-name{font-size:11px;font-weight:600;color:var(--ink2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-    /* sync indicator */
-    .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-left:4px;animation:pulse 2s infinite}
-    .sync-dot.syncing{background:var(--amber)}
-    .sync-dot.error{background:var(--red)}
   </style>
 </head>
 <body>
-
-<!-- LOGIN SCREEN -->
-<div class="login-screen" id="login-screen">
-  <div class="login-logo">RotasPRO</div>
-  <div class="login-sub">Entre com seu e-mail para salvar o histórico na nuvem em qualquer dispositivo</div>
-
-  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px">
-    <div id="login-form">
-      <div class="field" style="margin-bottom:10px">
-        <label>E-mail</label>
-        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email"
-               style="background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-family:Outfit,sans-serif;font-size:14px;color:var(--ink);outline:none;width:100%"
-               onkeydown="if(event.key==='Enter')loginNext()"/>
-      </div>
-      <div class="field" id="pw-field" style="margin-bottom:10px;display:none">
-        <label>Senha</label>
-        <input type="password" id="login-pw" placeholder="Mínimo 6 caracteres" autocomplete="current-password"
-               style="background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-family:Outfit,sans-serif;font-size:14px;color:var(--ink);outline:none;width:100%"
-               onkeydown="if(event.key==='Enter')loginSubmit()"/>
-      </div>
-      <button class="btn-add" id="login-btn" style="margin-top:0" onclick="loginNext()">Continuar →</button>
-      <p id="login-mode-hint" style="font-size:12px;color:var(--ink3);text-align:center;margin-top:10px"></p>
-    </div>
-    <div id="login-error" style="display:none;background:#fee2e2;border:1.5px solid #fca5a5;border-radius:10px;padding:10px 14px;font-size:12px;color:#991b1b;text-align:center"></div>
-  </div>
-  <div class="login-note">Dados salvos com segurança no Firebase 🔒</div>
-</div>
 
 <header>
   <div class="header-row">
     <div><div class="logo">RotasPRO</div><div class="logo-sub">Organizador de rotas</div></div>
     <div class="hdr-btns">
       <button class="btn-icon" onclick="openHistorico()" title="Histórico">📋</button>
-      <div id="user-chip" class="user-chip" onclick="openUserMenu()" style="display:none">
-        <img id="user-avatar" class="user-avatar" src="" alt=""/>
-        <span id="user-name" class="user-name"></span>
-        <span class="sync-dot" id="sync-dot"></span>
-      </div>
       <button class="btn-icon" onclick="openMenu()">☰</button>
     </div>
   </div>
@@ -419,7 +337,6 @@
     <button class="sheet-btn" onclick="salvarNoHistorico(true)"><span class="si">💾</span>Salvar rota no histórico</button>
     <button class="sheet-btn" onclick="openApiConfig()"><span class="si">🔑</span>Configurar API Google</button>
     <button class="sheet-btn" onclick="clearAll();closeMenu()"><span class="si">🗑️</span>Apagar toda a rota</button>
-    <button class="sheet-btn" id="btn-logout" onclick="fbLogout()" style="display:none"><span class="si">🚪</span>Sair da conta</button>
     <button class="sheet-btn" onclick="closeMenu()"><span class="si">✕</span>Fechar</button>
   </div>
 </div>
@@ -449,231 +366,19 @@
 <script>
 // ── STATE ──
 const DEFAULT_KEY = 'AIzaSyBmZRm6Erc2M1bJsuRpOZrlEc9rNyNAs5I';
-// Routes and historico start empty — Firebase is the ONLY source of truth when logged in.
-// localStorage is only used as offline fallback when not logged in.
-let routes   = [];
-let historico= [];
+let routes   = JSON.parse(localStorage.getItem('rotaspro_v4') || '[]');
+let historico= JSON.parse(localStorage.getItem('rotaspro_hist') || '[]');
 let userLat=null, userLng=null;
 let apiKey   = localStorage.getItem('rotaspro_gkey') || DEFAULT_KEY;
 let dragSrc  = null, selPos='normal';
 let acResults=[], acIdx=-1, acTimer=null;
-let routeStartTime = null;
-let fbUser = null; // Firebase current user
-
-// ── FIREBASE AUTH ──
-// ── EMAIL LOGIN FLOW ──
-// Simplified: always show both fields, try login first, fallback to register
-function showLoginError(msg){
-  const el=document.getElementById('login-error');
-  el.textContent=msg; el.style.display='block';
-}
-function hideLoginError(){ document.getElementById('login-error').style.display='none'; }
-
-// Show password field immediately on page load
-(function(){ 
-  setTimeout(()=>{
-    const pwf = document.getElementById('pw-field');
-    const hint = document.getElementById('login-mode-hint');
-    const btn = document.getElementById('login-btn');
-    if(pwf) pwf.style.display='block';
-    if(hint) hint.textContent='Use sua senha cadastrada ou crie uma nova';
-    if(btn){ btn.textContent='Entrar / Cadastrar →'; btn.onclick=loginSubmit; }
-  }, 300);
-})();
-
-async function loginNext(){ loginSubmit(); }
-
-async function loginSubmit(){
-  const email = document.getElementById('login-email').value.trim();
-  const pw    = document.getElementById('login-pw').value;
-  if(!email || !email.includes('@')){ showLoginError('Digite um e-mail válido'); return; }
-  if(pw.length < 6){ showLoginError('Senha precisa ter pelo menos 6 caracteres'); return; }
-  hideLoginError();
-
-  const btn = document.getElementById('login-btn');
-  btn.textContent='⏳ Entrando...'; btn.disabled=true;
-
-  try{
-    const {auth, signInWithEmailAndPassword} = window._fb;
-    // Try to sign in first
-    await signInWithEmailAndPassword(auth, email, pw);
-    // onAuthStateChanged handles the rest
-
-  }catch(err){
-    if(err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential'){
-      // Email not found — try to register
-      try{
-        const {auth, createUserWithEmailAndPassword} = window._fb;
-        await createUserWithEmailAndPassword(auth, email, pw);
-        // success — onAuthStateChanged handles rest
-      }catch(regErr){
-        btn.textContent='Entrar / Cadastrar →'; btn.disabled=false;
-        const msgs = {
-          'auth/email-already-in-use':'Senha incorreta para este e-mail. Tente novamente.',
-          'auth/weak-password':'Senha muito fraca. Use pelo menos 6 caracteres.',
-        };
-        showLoginError(msgs[regErr.code] || 'Erro: '+regErr.message);
-      }
-    } else {
-      btn.textContent='Entrar / Cadastrar →'; btn.disabled=false;
-      const msgs = {
-        'auth/wrong-password':'Senha incorreta. Tente novamente.',
-        'auth/invalid-credential':'Senha incorreta. Tente novamente.',
-        'auth/too-many-requests':'Muitas tentativas. Aguarde alguns minutos.',
-        'auth/user-disabled':'Conta desativada.',
-      };
-      showLoginError(msgs[err.code] || 'Erro: '+err.message);
-    }
-  }
-}
-
-function fbLogin(){ loginSubmit(); }
-
-function fbLogout(){
-  const {auth, signOut} = window._fb;
-  if(!confirm('Sair da conta?')) return;
-  signOut(auth).then(()=>{
-    fbUser=null;
-    updateUserUI(null);
-    toast('Você saiu da conta');
-    closeMenu();
-  });
-}
-
-function openUserMenu(){
-  openMenu();
-}
-
-function updateUserUI(user){
-  const chip = document.getElementById('user-chip');
-  const logoutBtn = document.getElementById('btn-logout');
-  if(user){
-    chip.style.display='flex';
-    document.getElementById('user-avatar').src = user.photoURL||'';
-    // Use displayName or first part of email
-    const name = user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'Usuário';
-    document.getElementById('user-name').textContent = name;
-    if(logoutBtn) logoutBtn.style.display='flex';
-    document.getElementById('login-screen').style.display='none';
-  } else {
-    chip.style.display='none';
-    if(logoutBtn) logoutBtn.style.display='none';
-    document.getElementById('login-screen').style.display='flex';
-  }
-}
-
-function setSyncStatus(status){ // 'ok' | 'syncing' | 'error'
-  const dot = document.getElementById('sync-dot');
-  if(!dot) return;
-  dot.className = 'sync-dot' + (status==='syncing'?' syncing':status==='error'?' error':'');
-}
-
-// ── FIREBASE FIRESTORE ──
-// ── FIREBASE SYNC (real-time) ──
-let _unsubRoutes = null;
-let _unsubHist   = null;
-
-function fbSubscribe(){
-  if(!fbUser) return;
-  const {db, doc, onSnapshot} = window._fb;
-
-  // Unsubscribe previous listeners if any
-  if(_unsubRoutes) _unsubRoutes();
-  if(_unsubHist)   _unsubHist();
-
-  setSyncStatus('syncing');
-
-  // Real-time listener for routes — fires immediately on connect and on every change
-  _unsubRoutes = onSnapshot(
-    doc(db,'users',fbUser.uid,'data','routes'),
-    snap => {
-      if(snap.exists()){
-        routes = snap.data().routes || [];
-      } else {
-        routes = [];
-      }
-      render();
-      setSyncStatus('ok');
-    },
-    err => { console.error('routes snapshot error', err); setSyncStatus('error'); }
-  );
-
-  // Real-time listener for historico
-  _unsubHist = onSnapshot(
-    doc(db,'users',fbUser.uid,'data','historico'),
-    snap => {
-      if(snap.exists()){
-        historico = snap.data().historico || [];
-      } else {
-        historico = [];
-      }
-      // Re-render if history panel is open
-      const histOverlay = document.getElementById('hist-overlay');
-      if(histOverlay && histOverlay.classList.contains('open')) renderHistorico();
-    },
-    err => { console.error('hist snapshot error', err); }
-  );
-}
-
-function fbUnsubscribe(){
-  if(_unsubRoutes){ _unsubRoutes(); _unsubRoutes=null; }
-  if(_unsubHist)  { _unsubHist();   _unsubHist=null;   }
-}
-
-async function fbSaveRoutes(){
-  if(!fbUser) return;
-  setSyncStatus('syncing');
-  try{
-    const {db, doc, setDoc} = window._fb;
-    await setDoc(doc(db,'users',fbUser.uid,'data','routes'),{
-      routes: routes.map(r=>({...r, _coords:r._coords||null})),
-      updatedAt: new Date().toISOString()
-    });
-    setSyncStatus('ok');
-  }catch(e){ console.error(e); setSyncStatus('error'); }
-}
-
-async function fbSaveHist(){
-  if(!fbUser) return;
-  setSyncStatus('syncing');
-  try{
-    const {db, doc, setDoc} = window._fb;
-    await setDoc(doc(db,'users',fbUser.uid,'data','historico'),{
-      historico: historico,
-      updatedAt: new Date().toISOString()
-    });
-    setSyncStatus('ok');
-  }catch(e){ console.error(e); setSyncStatus('error'); }
-}
-
-// Keep these as no-ops for compatibility (onSnapshot handles loading)
-async function fbLoadRoutes(){}
-async function fbLoadHist(){}
+let routeStartTime = null; // quando a rota foi iniciada
 
 // ── INIT ──
 (function(){
   if(!localStorage.getItem('rotaspro_gkey')) localStorage.setItem('rotaspro_gkey', DEFAULT_KEY);
   selectPos('normal');
   render();
-
-  // Handle auth state (fires on page load after redirect)
-  window._onAuthReady = async (user) => {
-    fbUser = user;
-    updateUserUI(user);
-    if(user){
-      // Subscribe to real-time updates — this replaces all localStorage usage
-      fbSubscribe();
-      const name = user.displayName?.split(' ')[0] || user.email?.split('@')[0] || '';
-      toast(`Olá${name?' '+name:''}! ☁️ Sincronizando...`);
-    } else {
-      // Not logged in — unsubscribe and load from localStorage as fallback
-      fbUnsubscribe();
-      routes   = JSON.parse(localStorage.getItem('rotaspro_v4') || '[]');
-      historico= JSON.parse(localStorage.getItem('rotaspro_hist') || '[]');
-      render();
-    }
-  };
-
 })();
 
 // ── API KEY ──
@@ -1074,22 +779,8 @@ function render(){
   save();
 }
 function esc(s=''){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function save(){
-  if(fbUser){
-    // Firebase is source of truth — save only to Firestore
-    fbSaveRoutes();
-  } else {
-    // Offline fallback
-    localStorage.setItem('rotaspro_v4', JSON.stringify(routes));
-  }
-}
-function saveHist(){
-  if(fbUser){
-    fbSaveHist();
-  } else {
-    localStorage.setItem('rotaspro_hist', JSON.stringify(historico));
-  }
-}
+function save(){localStorage.setItem('rotaspro_v4',JSON.stringify(routes))}
+function saveHist(){localStorage.setItem('rotaspro_hist',JSON.stringify(historico))}
 
 // ── ACTIONS ──
 function addRoute(){
